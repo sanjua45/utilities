@@ -1,0 +1,13 @@
+from PIL import Image
+
+# List of image files to merge into a PDF
+image_files = ['1_1.jpg', '1_2.jpg', '2_1.jpg']
+
+# Open images and convert to RGB 
+images = [Image.open(img).convert('RGB') for img in image_files]
+
+# Save the images as a single PDF
+output_filename = "Final_result.pdf"
+images[0].save(output_filename, save_all=True, append_images=images[1:])
+
+print(f"Merged PDF saved as {output_filename}")
