@@ -1,0 +1,58 @@
+from PIL import Image
+import os
+
+
+def is_image_file(filename):
+    """
+    Check if a file is an image based on its extension.
+
+    :param filename: The name of the file.
+    :return: True if the file is an image, False otherwise.
+    """
+    valid_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.webp')
+    return filename.lower().endswith(valid_extensions)
+
+
+def resize_image(input_path, output_path, max_size=(800, 800)):
+    """
+    Resize an image to fit within the specified maximum size while maintaining the aspect ratio.
+
+    :param input_path: Path to the original image.
+    :param output_path: Path to save the resized image.
+    :param max_size: Tuple indicating the maximum width and height (default is 800x800).
+    """
+    with Image.open(input_path) as img:
+        img.thumbnail(max_size, Image.Resampling.LANCZOS)  # Use LANCZOS instead of ANTIALIAS
+        img.save(output_path, optimize=True, quality=85)
+
+
+def resize_images_in_directory(directory_path, output_directory, max_size=(800, 800)):
+    """
+    Resize all image files in the specified directory.
+
+    :param directory_path: Path to the directory containing the images.
+    :param output_directory: Path to the directory to save resized images.
+    :param max_size: Tuple indicating the maximum width and height (default is 800x800).
+    """
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
+
+    for filename in os.listdir(directory_path):
+        input_path = os.path.join(directory_path, filename)
+        output_path = os.path.join(output_directory, filename)
+
+        # Check if the file is an image
+        if is_image_file(filename):
+            try:
+                resize_image(input_path, output_path, max_size)
+                print(f"Resized and saved {filename} to {output_path}")
+            except Exception as e:
+                print(f"Skipping {filename}: {e}")
+        else:
+            print(f"Skipping {filename}: Not a valid image file")
+
+
+# Example usage
+directory_path = '<Local_Path>/to_compress'  # Replace with the path to your images directory
+output_directory = '<Local_Path>/compressed/images'  # Replace with the path to save resized images
+resize_images_in_directory(directory_path, output_directory, max_size=(800, 800))
